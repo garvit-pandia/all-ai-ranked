@@ -1,0 +1,180 @@
+@import "tailwindcss";
+
+:root {
+  --background: #f3f1eb;
+  --paper: #fcfbf7;
+  --paper-alt: #f5f2ea;
+  --ink: #1a1f2b;
+  --muted: #5f677a;
+  --border: #d9d4c8;
+  --border-strong: #c2b8a2;
+  --accent: #0f5ba7;
+  --accent-soft: #e8f0fb;
+  --signal: #d1652d;
+  --signal-soft: #fbe8dd;
+  --ok: #1f7a5d;
+  --warn: #b6771e;
+  --shadow: 0 7px 20px rgba(16, 24, 40, 0.045);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-surface: var(--paper);
+  --color-surface-alt: var(--paper-alt);
+  --color-foreground: var(--ink);
+  --color-muted: var(--muted);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-accent: var(--accent);
+  --color-accent-soft: var(--accent-soft);
+  --color-signal: var(--signal);
+  --color-signal-soft: var(--signal-soft);
+  --color-ok: var(--ok);
+  --color-warn: var(--warn);
+  --font-serif: var(--font-cormorant);
+  --font-sans: var(--font-plex-sans);
+  --font-mono: var(--font-plex-mono);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background:
+    linear-gradient(180deg, #f8f6f1 0%, #f1eee7 100%),
+    radial-gradient(circle at 8% 14%, #fdf5ea 0%, transparent 24%),
+    radial-gradient(circle at 92% 7%, #eaf2fd 0%, transparent 28%);
+  color: var(--ink);
+  font-family: var(--font-plex-sans), sans-serif;
+  min-height: 100%;
+  text-rendering: optimizeLegibility;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+::selection {
+  background: #dbe8fb;
+}
+
+.editorial-shell {
+  position: relative;
+}
+
+.editorial-shell::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background-image: radial-gradient(rgba(18, 30, 57, 0.04) 0.45px, transparent 0.45px);
+  background-size: 5px 5px;
+  opacity: 0.11;
+  z-index: -1;
+}
+
+.paper-panel {
+  box-shadow: var(--shadow);
+}
+
+.perf-section {
+  content-visibility: auto;
+  contain-intrinsic-size: 1px 760px;
+}
+
+.section-label {
+  font-family: var(--font-mono), monospace;
+  font-size: 11px;
+  letter-spacing: 0.17em;
+  text-transform: uppercase;
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.chip {
+  border: 1px solid var(--border);
+  background: var(--paper-alt);
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-size: 11px;
+  line-height: 1;
+  color: var(--muted);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  transition: border-color 140ms ease, color 140ms ease, background-color 140ms ease;
+}
+
+.chip-strong {
+  border-color: var(--border-strong);
+  color: var(--ink);
+  background: #f1ece2;
+}
+
+.chip-accent {
+  border-color: #c7daf4;
+  color: #0b4d8d;
+  background: var(--accent-soft);
+}
+
+.chip-signal {
+  border-color: #efc6b4;
+  color: #b04a16;
+  background: var(--signal-soft);
+}
+
+.fade-rise {
+  animation: fadeRise 0.55s ease-out both;
+}
+
+.fade-rise-delay {
+  animation: fadeRise 0.65s ease-out both;
+  animation-delay: 0.08s;
+}
+
+@keyframes fadeRise {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.pulse-row {
+  animation: pulseRow 0.38s ease-out;
+}
+
+@keyframes pulseRow {
+  0% {
+    background-color: rgba(15, 91, 167, 0.16);
+  }
+  100% {
+    background-color: transparent;
+  }
+}
+
+@media (max-width: 640px) {
+  .perf-section {
+    contain-intrinsic-size: 1px 980px;
+  }
+
+  .section-label {
+    letter-spacing: 0.12em;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fade-rise,
+  .fade-rise-delay,
+  .pulse-row,
+  .chip {
+    animation: none !important;
+    transition: none !important;
+  }
+}
