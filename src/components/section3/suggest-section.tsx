@@ -63,12 +63,12 @@ export default function SuggestSection({ onApplyHighlights }: SuggestSectionProp
   }
 
   return (
-    <section id="suggest" className="perf-section scroll-mt-24 rounded-2xl border border-border bg-surface px-4 py-5 md:px-6 md:py-6 paper-panel">
-      <p className="section-label">Section 3 · Suggest</p>
-      <h2 className="mt-2 font-serif text-4xl leading-none tracking-tight text-foreground md:text-5xl">
+    <section id="suggest" className="perf-section suggest-shell scroll-mt-24 px-4 py-5 md:px-6 md:py-6">
+      <p className="suggest-label">Section 3 · Suggest</p>
+      <h2 className="mt-2 font-serif text-4xl leading-none tracking-tight text-[#f5f2e9] md:text-5xl">
         Get Two Best Picks
       </h2>
-      <p className="mt-3 max-w-2xl text-sm leading-relaxed text-muted md:text-base">
+      <p className="mt-3 max-w-2xl text-sm leading-relaxed text-[#bfc8d9] md:text-base">
         Describe your task and get practical recommendations across both the public ranking and your personal stack.
       </p>
 
@@ -76,32 +76,32 @@ export default function SuggestSection({ onApplyHighlights }: SuggestSectionProp
         <textarea
           value={suggestInput}
           onChange={(event) => setSuggestInput(event.target.value)}
-          className="min-h-28 w-full rounded-xl border border-border bg-surface-alt p-3 text-sm text-foreground outline-none transition focus:border-accent"
+          className="suggest-input"
           placeholder="Describe what you want to do..."
         />
         <div className="flex flex-wrap items-center gap-3">
           <button
             type="submit"
             disabled={loadingSuggest}
-            className="rounded-full border border-border-strong bg-surface px-4 py-2 text-xs font-semibold uppercase tracking-[0.08em] text-foreground transition hover:border-accent hover:text-accent disabled:opacity-65"
+            className="suggest-button"
           >
             {loadingSuggest ? "Analyzing" : "Suggest best options"}
           </button>
-          <p className="font-mono text-[11px] uppercase tracking-[0.08em] text-muted">
+          <p className="font-mono text-[11px] uppercase tracking-[0.08em] text-[#93a0bc]">
             Scans both sections and highlights matching rows
           </p>
         </div>
       </form>
 
       {suggestError && (
-        <p className="mt-3 rounded-xl border border-warn/30 bg-[#f8f1e5] px-3 py-2 text-sm text-warn">
+        <p className="suggest-error mt-3">
           {suggestError}
         </p>
       )}
 
       {suggestData && (
-        <div className="mt-5 border-t border-border pt-4">
-          <p className="font-mono text-[11px] uppercase tracking-[0.1em] text-muted">
+        <div className="mt-5 border-t border-[#3d4b67] pt-4">
+          <p className="font-mono text-[11px] uppercase tracking-[0.1em] text-[#93a0bc]">
             Engine: {suggestData.usedModel}
             {suggestData.fallback ? " (fallback mode)" : ""}
           </p>
@@ -110,16 +110,16 @@ export default function SuggestSection({ onApplyHighlights }: SuggestSectionProp
             {suggestData.picks.map((pick, index) => (
               <article
                 key={`${pick.source}-${pick.slug}`}
-                className="rounded-xl border border-border bg-surface-alt px-3 py-3"
+                className="suggest-result"
               >
-                <p className="font-mono text-[11px] uppercase tracking-[0.1em] text-muted">
+                <p className="font-mono text-[11px] uppercase tracking-[0.1em] text-[#93a0bc]">
                   Pick {index + 1} · {pick.source}
                 </p>
-                <h3 className="mt-1 text-lg font-semibold text-foreground">
+                <h3 className="mt-1 text-lg font-semibold text-[#f5f2e9]">
                   {pick.name}
                 </h3>
-                <p className="text-sm text-muted">{pick.provider}</p>
-                <p className="mt-2 text-sm leading-relaxed text-muted">{pick.reason}</p>
+                <p className="text-sm text-[#d1d8e7]">{pick.provider}</p>
+                <p className="mt-2 text-sm leading-relaxed text-[#dce2f0]">{pick.reason}</p>
               </article>
             ))}
           </div>

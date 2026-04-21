@@ -37,3 +37,20 @@
 - Supabase migration and seed SQL are included for immediate data setup.
 - Filter UX now includes section result counts, auto-jump, update pulse animation, empty states, and one-click active-filter chips.
 - Performance + aesthetic upgrade completed: memoized sections, extracted Suggest section, content-visibility optimization, cleaner editorial spacing, and successful lint/build.
+
+## Redesign Plan (Aesthetic + Information Flow)
+
+- [x] Rework page information flow so Top Free Chatbots is the first primary section and controls feel contextual.
+- [x] Replace the large global filter slab with smaller section-level filter rails for chatbots and model stack.
+- [x] Redesign chatbots and models into sharper editorial data blocks with stronger hierarchy and better scanability.
+- [x] Restyle Suggest into a distinct contrast panel that feels like an interactive decision lab.
+- [x] Run lint/build, verify responsive behavior, and capture outcome in this file.
+
+## Review (Redesign)
+
+- Lint passed after refactor.
+- Production build passed.
+- Top Free Chatbots now appears as the first primary content section with its own local use-case filters.
+- The previous global filter slab was removed and replaced by section-level pill rails plus active tokens.
+- Chatbots now use a lead-card + ranked table treatment; models now use a sharper data-grid format with improved typography hierarchy.
+- Suggest section is now visually distinct as a high-contrast decision lab panel while preserving the same API behavior.

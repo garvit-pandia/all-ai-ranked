@@ -1,4 +1,5 @@
 import { memo } from "react";
+import type { ReactNode } from "react";
 
 import { ChatbotEntry } from "@/types/domain";
 
@@ -8,6 +9,7 @@ interface ChatbotsSectionProps {
   visibleCount: number;
   totalCount: number;
   animateRows: boolean;
+  controls?: ReactNode;
 }
 
 function ChatbotsSectionImpl({
@@ -16,10 +18,13 @@ function ChatbotsSectionImpl({
   visibleCount,
   totalCount,
   animateRows,
+  controls,
 }: ChatbotsSectionProps) {
+  const [leader, ...rest] = chatbots;
+
   return (
     <section id="top-free-chatbots" className="perf-section scroll-mt-24 fade-rise">
-      <div className="mb-6 border-b border-border pb-4">
+      <div className="mb-6 border-b border-border-strong pb-5">
         <p className="section-label">Section 1 · Public Utility</p>
         <div className="mt-3 flex flex-wrap items-end justify-between gap-3">
           <div>
@@ -27,71 +32,93 @@ function ChatbotsSectionImpl({
               Top Free Chatbots
             </h2>
             <p className="mt-3 max-w-2xl text-sm leading-relaxed text-muted md:text-base">
-              Ranked editorially for free-tier capability, friction, and practical daily use.
+              Ranked for practical free-tier quality, reliability, and daily usefulness.
             </p>
           </div>
-          <div className="chip">March 2026 ranking baseline</div>
+          <div className="chip chip-strong">March 2026 ranking baseline</div>
         </div>
-        <div className="mt-3 flex items-center gap-2">
+        <div className="mt-4 flex items-center gap-2">
           <span className="chip chip-strong">{visibleCount} shown</span>
           <span className="chip">{totalCount} total</span>
         </div>
+        {controls && <div className="mt-4">{controls}</div>}
       </div>
 
       {chatbots.length === 0 ? (
-        <div className="rounded-2xl border border-border bg-surface px-5 py-8 text-center paper-panel">
+        <div className="empty-panel">
           <p className="font-serif text-3xl tracking-tight text-foreground">No chatbot matches this filter.</p>
           <p className="mt-2 text-sm text-muted">
-            Try switching use-case to <span className="font-semibold text-foreground">All</span> or clearing active chips.
+            Try switching the use-case back to <span className="font-semibold text-foreground">All</span>.
           </p>
         </div>
       ) : (
-        <div className="overflow-hidden rounded-2xl border border-border bg-surface paper-panel">
-          {chatbots.map((chatbot) => {
+        <div className="rank-table">
+          {leader && (
+            <article
+              key={leader.id}
+              className={`rank-lead ${highlightedSlugs.has(leader.slug) ? "rank-lead-highlight" : ""}`}
+            >
+              <div className="rank-lead-no">#{leader.rank}</div>
+              <div>
+                <p className="section-label">Top pick</p>
+                <h3 className="rank-lead-title">{leader.name}</h3>
+                <p className="rank-lead-subline">
+                  {leader.provider} · {leader.bestFor} · {leader.freeModel}
+                </p>
+                <p className="rank-lead-limit">{leader.limit}</p>
+                <div className="mt-3 flex flex-wrap gap-2">
+                  <span className="chip chip-accent">Context {leader.context}</span>
+                  <span className="chip">Signup {leader.signup}</span>
+                  <span className="chip">Web {leader.webSearch ? "yes" : "no"}</span>
+                </div>
+              </div>
+              <div className="rank-lead-action">
+                <a
+                  href={leader.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="outline-button"
+                >
+                  Open
+                </a>
+              </div>
+            </article>
+          )}
+
+          {rest.map((chatbot, index) => {
             const highlighted = highlightedSlugs.has(chatbot.slug);
             const isTopThree = chatbot.rank <= 3;
 
             return (
               <article
                 key={chatbot.id}
-                className={`group grid gap-4 border-b border-border px-4 py-4 transition last:border-b-0 md:grid-cols-[72px_1fr_auto] md:items-center md:px-6 ${
-                  highlighted ? "bg-accent-soft/60" : "hover:bg-surface-alt/70"
-                } ${animateRows ? "pulse-row" : ""}`}
+                className={`rank-row ${highlighted ? "rank-row-highlight" : ""} ${animateRows ? "rank-row-animate" : ""}`}
+                style={{ animationDelay: `${index * 32}ms` }}
               >
-                <div className="flex items-center gap-2 md:block">
-                  <p className="font-mono text-2xl font-semibold text-foreground md:text-[30px]">
-                    {String(chatbot.rank).padStart(2, "0")}
+                <div className="rank-cell rank-cell-no">{String(chatbot.rank).padStart(2, "0")}</div>
+
+                <div className="rank-cell">
+                  <h3 className="rank-name">{chatbot.name}</h3>
+                  <p className="rank-meta">
+                    {chatbot.provider} · {chatbot.bestFor}
                   </p>
+                  <p className="rank-limit">{chatbot.limit}</p>
+                </div>
+
+                <div className="rank-cell rank-cell-details">
+                  <p>{chatbot.freeModel}</p>
+                  <p>{chatbot.context}</p>
+                  <p>{chatbot.signup}</p>
+                  <p>{chatbot.webSearch ? "Web" : "No web"}</p>
+                </div>
+
+                <div className="rank-cell rank-cell-action">
                   {isTopThree && <span className="chip chip-signal">Top tier</span>}
-                </div>
-
-                <div>
-                  <div className="flex flex-wrap items-center gap-2">
-                    <h3 className="text-xl font-semibold tracking-tight text-foreground">{chatbot.name}</h3>
-                    <span className="chip">{chatbot.provider}</span>
-                    <span className="chip chip-accent">{chatbot.bestFor}</span>
-                  </div>
-
-                  <div className="mt-3 flex flex-wrap gap-2">
-                    <span className="chip chip-strong">Model: {chatbot.freeModel}</span>
-                    <span className="chip">Context: {chatbot.context}</span>
-                    <span className="chip">Signup: {chatbot.signup}</span>
-                    <span className={`chip ${chatbot.webSearch ? "chip-accent" : ""}`}>
-                      Web: {chatbot.webSearch ? "yes" : "no"}
-                    </span>
-                  </div>
-
-                  <p className="mt-3 border-l-2 border-border-strong pl-3 text-xs leading-relaxed text-muted md:text-sm">
-                    {chatbot.limit}
-                  </p>
-                </div>
-
-                <div className="flex items-center md:justify-end">
                   <a
                     href={chatbot.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="rounded-full border border-border-strong bg-surface px-4 py-2 text-xs font-semibold uppercase tracking-[0.08em] text-foreground transition hover:border-accent hover:text-accent"
+                    className="outline-button"
                   >
                     Open
                   </a>

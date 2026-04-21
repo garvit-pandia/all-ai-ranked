@@ -1,4 +1,5 @@
 import { memo } from "react";
+import type { ReactNode } from "react";
 
 import { ModelEntry } from "@/types/domain";
 
@@ -8,6 +9,7 @@ interface ModelsSectionProps {
   visibleCount: number;
   totalCount: number;
   animateRows: boolean;
+  controls?: ReactNode;
 }
 
 const sourceLabel: Record<ModelEntry["source"], string> = {
@@ -21,10 +23,11 @@ function ModelsSectionImpl({
   visibleCount,
   totalCount,
   animateRows,
+  controls,
 }: ModelsSectionProps) {
   return (
     <section id="my-api-stack" className="perf-section scroll-mt-24 fade-rise-delay">
-      <div className="mb-6 border-b border-border pb-4">
+      <div className="mb-6 border-b border-border-strong pb-5">
         <p className="section-label">Section 2 · Personal Stack</p>
         <div className="mt-3 flex flex-wrap items-end justify-between gap-3">
           <div>
@@ -41,56 +44,63 @@ function ModelsSectionImpl({
           <span className="chip chip-strong">{visibleCount} shown</span>
           <span className="chip">{totalCount} total</span>
         </div>
+        {controls && <div className="mt-4">{controls}</div>}
       </div>
 
       {models.length === 0 ? (
-        <div className="rounded-2xl border border-border bg-surface px-5 py-8 text-center paper-panel">
+        <div className="empty-panel">
           <p className="font-serif text-3xl tracking-tight text-foreground">No model matches this filter.</p>
           <p className="mt-2 text-sm text-muted">
             Clear active chips or switch source/task to <span className="font-semibold text-foreground">All</span>.
           </p>
         </div>
       ) : (
-        <div className="overflow-hidden rounded-2xl border border-border bg-surface paper-panel">
-          {models.map((model) => {
+        <div className="model-table">
+          <div className="model-head" aria-hidden>
+            <span>Model</span>
+            <span>Provider</span>
+            <span>Source</span>
+            <span>Speed</span>
+            <span>Context</span>
+            <span>Tags</span>
+          </div>
+
+          {models.map((model, index) => {
             const highlighted = highlightedSlugs.has(model.slug);
 
             return (
               <article
                 key={model.id}
-                className={`border-b border-border px-4 py-4 transition last:border-b-0 md:px-6 ${
-                  highlighted ? "bg-accent-soft/60" : "hover:bg-surface-alt/70"
-                } ${animateRows ? "pulse-row" : ""}`}
+                className={`model-row ${highlighted ? "model-row-highlight" : ""} ${animateRows ? "model-row-animate" : ""}`}
+                style={{ animationDelay: `${index * 24}ms` }}
               >
-                <div className="grid gap-3">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <h3 className="text-lg font-semibold tracking-tight text-foreground">{model.name}</h3>
-                    <span className="chip">{model.provider}</span>
-                    <span className="chip chip-strong">{sourceLabel[model.source]}</span>
+                <div className="model-primary">
+                  <h3 className="model-name">{model.name}</h3>
+                  <div className="mt-2 flex flex-wrap gap-2">
                     {model.isNew2026 && <span className="chip chip-signal">New 2026</span>}
                     {model.status !== "active" && <span className="chip">{model.status}</span>}
+                    {model.note && <span className="chip">note</span>}
                   </div>
-
-                  <div className="flex flex-wrap gap-2">
-                    <span className="chip">Speed: {renderSpeed(model.speed)}</span>
-                    <span className="chip">Context: {model.context}</span>
-                    <span className="chip">Cost: {model.costLabel}</span>
-                  </div>
-
-                  <div className="flex flex-wrap gap-2">
-                    {model.tags.map((tag) => (
-                      <span key={tag} className="chip chip-accent">
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-
-                  {model.note && (
-                    <p className="border-l-2 border-warn pl-3 text-xs leading-relaxed text-muted md:text-sm">
-                      {model.note}
-                    </p>
-                  )}
                 </div>
+
+                <div className="model-provider">{model.provider}</div>
+                <div className="model-source">{sourceLabel[model.source]}</div>
+                <div className="model-speed">{renderSpeed(model.speed)}</div>
+                <div className="model-context">{model.context}</div>
+
+                <div className="model-tags">
+                  {model.tags.map((tag) => (
+                    <span key={tag} className="chip chip-accent">
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+
+                {model.note && (
+                  <p className="model-note" role="note">
+                    {model.note}
+                  </p>
+                )}
               </article>
             );
           })}
@@ -101,7 +111,7 @@ function ModelsSectionImpl({
 }
 
 function renderSpeed(speed: number) {
-  return `${"●".repeat(speed)}${"○".repeat(5 - speed)}`;
+  return `${"*".repeat(speed)}${".".repeat(5 - speed)}`;
 }
 
 const ModelsSection = memo(ModelsSectionImpl);

@@ -1,6 +1,7 @@
 "use client";
 
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import type { MutableRefObject } from "react";
 
 import ModelsSection from "@/components/section1/models-section";
 import ChatbotsSection from "@/components/section2/chatbots-section";
@@ -39,6 +40,7 @@ export default function Dashboard({ initialModels, initialChatbots }: DashboardP
 
   const modelAnimTimer = useRef<number | null>(null);
   const chatbotAnimTimer = useRef<number | null>(null);
+  const timerRegistry = useRef<Set<number>>(new Set());
 
   const filteredModels = useMemo(() => {
     const byTask = initialModels.filter((model) => {
@@ -66,11 +68,11 @@ export default function Dashboard({ initialModels, initialChatbots }: DashboardP
   }, [chatbotFilter, initialChatbots]);
 
   const triggerModelRefresh = useCallback(() => {
-    triggerAnimation(setAnimateModelRows, modelAnimTimer);
+    triggerAnimation(setAnimateModelRows, modelAnimTimer, timerRegistry.current);
   }, []);
 
   const triggerChatbotRefresh = useCallback(() => {
-    triggerAnimation(setAnimateChatbotRows, chatbotAnimTimer);
+    triggerAnimation(setAnimateChatbotRows, chatbotAnimTimer, timerRegistry.current);
   }, []);
 
   const applyHighlights = useCallback((modelSlugs: string[], chatbotSlugs: string[]) => {
@@ -78,9 +80,18 @@ export default function Dashboard({ initialModels, initialChatbots }: DashboardP
     setChatbotHighlights(new Set(chatbotSlugs));
   }, []);
 
+  useEffect(() => {
+    const timers = timerRegistry.current;
+
+    return () => {
+      timers.forEach((timerId) => window.clearTimeout(timerId));
+      timers.clear();
+    };
+  }, []);
+
   return (
     <div className="editorial-shell">
-      <header className="sticky top-0 z-20 border-b border-border bg-surface/90 backdrop-blur-md">
+      <header className="sticky top-0 z-20 border-b border-border-strong bg-surface/90 backdrop-blur-md">
         <div className="mx-auto flex w-full max-w-6xl items-center justify-between px-4 py-3 md:px-6">
           <a href="#top" className="font-mono text-xs font-semibold uppercase tracking-[0.15em] text-accent">
             My AI Stack · 2026
@@ -99,148 +110,27 @@ export default function Dashboard({ initialModels, initialChatbots }: DashboardP
         </div>
       </header>
 
-      <main id="top" className="mx-auto w-full max-w-6xl px-4 py-7 md:px-6 md:py-9">
-        <section className="perf-section fade-rise mb-8 border-b border-border pb-7 md:mb-9 md:pb-9">
-          <p className="section-label">My AI Stack · Editorial Dashboard</p>
-          <h1 className="mt-3 max-w-4xl font-serif text-5xl leading-[0.95] tracking-tight text-foreground md:text-7xl">
-            Practical model choices for real tasks, not hype.
-          </h1>
-          <p className="mt-5 max-w-3xl text-sm leading-relaxed text-muted md:text-base">
-            Public free chatbots first, then your personal model inventory. Scan,
-            filter, and decide fast with transparent trade-offs.
-          </p>
-          <div className="mt-5 flex flex-wrap gap-2">
-            <span className="chip">Editorial data journal</span>
-            <span className="chip chip-accent">Speed-focused interactions</span>
-            <span className="chip chip-signal">Light mode only</span>
-          </div>
-        </section>
-
-        <section className="perf-section fade-rise-delay mb-10 rounded-2xl border border-border bg-surface px-4 py-4 md:px-6 paper-panel">
-          <div className="grid gap-3 md:grid-cols-2">
-            <FilterLine
-              label="Top free chatbots"
-              value={chatbotFilter}
-              onChange={(value) => {
-                setChatbotFilter(value as ChatbotFilter);
-                triggerChatbotRefresh();
-                scrollToSection("top-free-chatbots");
-              }}
-              options={[
-                { value: "all", label: "All" },
-                { value: "coding", label: "Coding" },
-                { value: "research", label: "Research" },
-                { value: "long-context", label: "Long-context" },
-                { value: "no-signup", label: "No-signup" },
-              ]}
-            />
-
-            <FilterLine
-              label="My API stack · task"
-              value={modelTask}
-              onChange={(value) => {
-                setModelTask(value as ModelTaskFilter);
-                triggerModelRefresh();
-                scrollToSection("my-api-stack");
-              }}
-              options={[
-                { value: "all", label: "All" },
-                { value: "coding", label: "Coding" },
-                { value: "reasoning", label: "Reasoning" },
-                { value: "writing", label: "Writing" },
-                { value: "speed", label: "Speed" },
-                { value: "multimodal", label: "Multimodal" },
-                { value: "long-context", label: "Long-context" },
-              ]}
-            />
-
-            <FilterLine
-              label="My API stack · source"
-              value={modelSource}
-              onChange={(value) => {
-                setModelSource(value as ModelSourceFilter);
-                triggerModelRefresh();
-                scrollToSection("my-api-stack");
-              }}
-              options={[
-                { value: "all", label: "All" },
-                { value: "paid", label: "Paid" },
-                { value: "free_api", label: "Free API" },
-              ]}
-            />
-
-            <FilterLine
-              label="My API stack · sort"
-              value={modelSort}
-              onChange={(value) => {
-                setModelSort(value as ModelSort);
-                triggerModelRefresh();
-                scrollToSection("my-api-stack");
-              }}
-              options={[
-                { value: "speed", label: "Speed" },
-                { value: "context", label: "Context" },
-                { value: "name", label: "Name" },
-              ]}
-            />
+      <main id="top" className="mx-auto w-full max-w-6xl px-4 py-8 md:px-6 md:py-10">
+        <section className="perf-section fade-rise mb-10 grid gap-5 border-b border-border-strong pb-8 md:mb-11 md:grid-cols-[1.3fr_0.7fr] md:pb-10">
+          <div>
+            <p className="section-label">My AI Stack · Editorial Dashboard</p>
+            <h1 className="mt-3 max-w-4xl font-serif text-5xl leading-[0.92] tracking-tight text-foreground md:text-7xl">
+              Pick the right AI faster, with less noise.
+            </h1>
+            <p className="mt-5 max-w-3xl text-sm leading-relaxed text-muted md:text-base">
+              Start with the best free chatbots, then evaluate your API models with compact filters and an
+              AI-assisted suggestion lab.
+            </p>
           </div>
 
-          <div className="mt-4 flex flex-wrap items-center gap-2 border-t border-border pt-3">
-            <span className="font-mono text-[11px] uppercase tracking-[0.08em] text-muted">
-              Active filters
-            </span>
-
-            {chatbotFilter !== "all" && (
-              <ActiveChip
-                label={`Chatbots: ${chatbotFilter}`}
-                onClick={() => {
-                  setChatbotFilter("all");
-                  triggerChatbotRefresh();
-                  scrollToSection("top-free-chatbots");
-                }}
-              />
-            )}
-
-            {modelTask !== "all" && (
-              <ActiveChip
-                label={`Task: ${modelTask}`}
-                onClick={() => {
-                  setModelTask("all");
-                  triggerModelRefresh();
-                  scrollToSection("my-api-stack");
-                }}
-              />
-            )}
-
-            {modelSource !== "all" && (
-              <ActiveChip
-                label={`Source: ${modelSource}`}
-                onClick={() => {
-                  setModelSource("all");
-                  triggerModelRefresh();
-                  scrollToSection("my-api-stack");
-                }}
-              />
-            )}
-
-            {modelSort !== "speed" && (
-              <ActiveChip
-                label={`Sort: ${modelSort}`}
-                onClick={() => {
-                  setModelSort("speed");
-                  triggerModelRefresh();
-                  scrollToSection("my-api-stack");
-                }}
-              />
-            )}
-
-            {chatbotFilter === "all" &&
-              modelTask === "all" &&
-              modelSource === "all" &&
-              modelSort === "speed" && (
-                <span className="text-xs text-muted">None</span>
-              )}
-          </div>
+          <aside className="hero-note">
+            <p className="hero-note-label">Flow</p>
+            <ol className="hero-note-list">
+              <li>Scan top free chatbots</li>
+              <li>Narrow your API stack</li>
+              <li>Run a 2-pick suggestion</li>
+            </ol>
+          </aside>
         </section>
 
         <div className="space-y-11">
@@ -250,6 +140,37 @@ export default function Dashboard({ initialModels, initialChatbots }: DashboardP
             visibleCount={filteredChatbots.length}
             totalCount={initialChatbots.length}
             animateRows={animateChatbotRows}
+            controls={
+              <div className="section-controls">
+                <FilterRail
+                  label="Use case"
+                  value={chatbotFilter}
+                  onChange={(value) => {
+                    setChatbotFilter(value as ChatbotFilter);
+                    triggerChatbotRefresh();
+                  }}
+                  options={[
+                    { value: "all", label: "All" },
+                    { value: "coding", label: "Coding" },
+                    { value: "research", label: "Research" },
+                    { value: "long-context", label: "Long-context" },
+                    { value: "no-signup", label: "No-signup" },
+                  ]}
+                />
+                {chatbotFilter !== "all" && (
+                  <button
+                    type="button"
+                    className="filter-reset"
+                    onClick={() => {
+                      setChatbotFilter("all");
+                      triggerChatbotRefresh();
+                    }}
+                  >
+                    Reset
+                  </button>
+                )}
+              </div>
+            }
           />
 
           <ModelsSection
@@ -258,6 +179,89 @@ export default function Dashboard({ initialModels, initialChatbots }: DashboardP
             visibleCount={filteredModels.length}
             totalCount={initialModels.length}
             animateRows={animateModelRows}
+            controls={
+              <div className="space-y-3">
+                <div className="grid gap-3 xl:grid-cols-3">
+                  <FilterRail
+                    label="Task"
+                    value={modelTask}
+                    onChange={(value) => {
+                      setModelTask(value as ModelTaskFilter);
+                      triggerModelRefresh();
+                    }}
+                    options={[
+                      { value: "all", label: "All" },
+                      { value: "coding", label: "Coding" },
+                      { value: "reasoning", label: "Reasoning" },
+                      { value: "writing", label: "Writing" },
+                      { value: "speed", label: "Speed" },
+                      { value: "multimodal", label: "Multimodal" },
+                      { value: "long-context", label: "Long-context" },
+                    ]}
+                  />
+                  <FilterRail
+                    label="Source"
+                    value={modelSource}
+                    onChange={(value) => {
+                      setModelSource(value as ModelSourceFilter);
+                      triggerModelRefresh();
+                    }}
+                    options={[
+                      { value: "all", label: "All" },
+                      { value: "paid", label: "Paid" },
+                      { value: "free_api", label: "Free API" },
+                    ]}
+                  />
+                  <FilterRail
+                    label="Sort"
+                    value={modelSort}
+                    onChange={(value) => {
+                      setModelSort(value as ModelSort);
+                      triggerModelRefresh();
+                    }}
+                    options={[
+                      { value: "speed", label: "Speed" },
+                      { value: "context", label: "Context" },
+                      { value: "name", label: "Name" },
+                    ]}
+                  />
+                </div>
+
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="font-mono text-[11px] uppercase tracking-[0.08em] text-muted">Active</span>
+                  {modelTask !== "all" && (
+                    <ActiveToken
+                      label={`Task ${modelTask}`}
+                      onClick={() => {
+                        setModelTask("all");
+                        triggerModelRefresh();
+                      }}
+                    />
+                  )}
+                  {modelSource !== "all" && (
+                    <ActiveToken
+                      label={`Source ${modelSource}`}
+                      onClick={() => {
+                        setModelSource("all");
+                        triggerModelRefresh();
+                      }}
+                    />
+                  )}
+                  {modelSort !== "speed" && (
+                    <ActiveToken
+                      label={`Sort ${modelSort}`}
+                      onClick={() => {
+                        setModelSort("speed");
+                        triggerModelRefresh();
+                      }}
+                    />
+                  )}
+                  {modelTask === "all" && modelSource === "all" && modelSort === "speed" && (
+                    <span className="text-xs text-muted">None</span>
+                  )}
+                </div>
+              </div>
+            }
           />
 
           <SuggestSection onApplyHighlights={applyHighlights} />
@@ -267,24 +271,30 @@ export default function Dashboard({ initialModels, initialChatbots }: DashboardP
   );
 }
 
-function scrollToSection(id: string) {
-  const target = document.getElementById(id);
-  if (!target) return;
-  target.scrollIntoView({ behavior: "smooth", block: "start" });
-}
-
 function triggerAnimation(
   setState: (value: boolean) => void,
-  timerRef: React.MutableRefObject<number | null>,
+  timerRef: MutableRefObject<number | null>,
+  timerRegistry: Set<number>,
 ) {
   setState(false);
   if (timerRef.current) {
     window.clearTimeout(timerRef.current);
+    timerRegistry.delete(timerRef.current);
   }
-  window.setTimeout(() => {
+
+  timerRef.current = createManagedTimeout(() => {
     setState(true);
-    timerRef.current = window.setTimeout(() => setState(false), 360);
-  }, 16);
+    timerRef.current = createManagedTimeout(() => setState(false), 360, timerRegistry);
+  }, 16, timerRegistry);
+}
+
+function createManagedTimeout(callback: () => void, delayMs: number, timerRegistry: Set<number>) {
+  const timerId = window.setTimeout(() => {
+    timerRegistry.delete(timerId);
+    callback();
+  }, delayMs);
+  timerRegistry.add(timerId);
+  return timerId;
 }
 
 function parseContextToTokens(value: string): number {
@@ -298,7 +308,7 @@ function parseContextToTokens(value: string): number {
   return 50_000;
 }
 
-function FilterLine({
+function FilterRail({
   label,
   value,
   onChange,
@@ -310,26 +320,27 @@ function FilterLine({
   options: Array<{ value: string; label: string }>;
 }) {
   return (
-    <label className="flex items-center justify-between gap-3 rounded-xl border border-border bg-surface-alt px-3 py-2">
-      <span className="font-mono text-[11px] font-medium uppercase tracking-[0.08em] text-muted">
-        {label}
-      </span>
-      <select
-        value={value}
-        onChange={(event) => onChange(event.target.value)}
-        className="rounded-full border border-border bg-surface px-3 py-1 text-sm text-foreground outline-none transition focus:border-accent"
-      >
+    <div className="filter-rail">
+      <span className="filter-label">{label}</span>
+      <div className="filter-pills" role="radiogroup" aria-label={label}>
         {options.map((option) => (
-          <option key={option.value} value={option.value}>
+          <button
+            key={option.value}
+            type="button"
+            onClick={() => onChange(option.value)}
+            className={`filter-pill ${value === option.value ? "filter-pill-active" : ""}`}
+            role="radio"
+            aria-checked={value === option.value}
+          >
             {option.label}
-          </option>
+          </button>
         ))}
-      </select>
-    </label>
+      </div>
+    </div>
   );
 }
 
-function ActiveChip({
+function ActiveToken({
   label,
   onClick,
 }: {
@@ -339,10 +350,10 @@ function ActiveChip({
   return (
     <button
       type="button"
-      className="chip chip-accent cursor-pointer transition hover:border-accent hover:text-accent"
+      className="filter-token"
       onClick={onClick}
     >
-      {label} ×
+      {label} x
     </button>
   );
 }
