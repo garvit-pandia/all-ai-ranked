@@ -228,8 +228,15 @@ a {
 .empty-panel {
   border: 1px solid var(--border-strong);
   background: var(--paper);
-  padding: 28px 20px;
+  padding: 48px 24px;
   text-align: center;
+}
+
+.empty-icon {
+  width: 48px;
+  height: 48px;
+  margin: 0 auto 16px;
+  color: var(--border-strong);
 }
 
 .rank-table {
@@ -290,7 +297,8 @@ a {
   gap: 12px;
   border-bottom: 1px solid var(--border);
   padding: 14px;
-  transition: background-color 120ms ease;
+  transition: background-color 140ms ease;
+  will-change: background-color;
 }
 
 .rank-row:last-child {
@@ -324,6 +332,9 @@ a {
   font-family: var(--font-serif), serif;
   font-size: 1.55rem;
   line-height: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .rank-meta {
@@ -399,7 +410,8 @@ a {
   gap: 10px;
   border-bottom: 1px solid var(--border);
   padding: 14px;
-  transition: background-color 120ms ease;
+  transition: background-color 140ms ease;
+  will-change: background-color;
 }
 
 .model-row:last-child {
@@ -427,6 +439,9 @@ a {
   font-family: var(--font-serif), serif;
   font-size: 1.5rem;
   line-height: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .model-provider,
@@ -449,6 +464,51 @@ a {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
+  max-height: 60px;
+  overflow-y: auto;
+}
+
+.model-tags::-webkit-scrollbar {
+  width: 4px;
+}
+
+.model-tags::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 4px;
+}
+
+.table-wrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.table-wrap::-webkit-scrollbar {
+  height: 6px;
+}
+
+.table-wrap::-webkit-scrollbar-thumb {
+  background: var(--border-strong);
+  border-radius: 3px;
+}
+
+.sticky-mobile-filters {
+  position: sticky;
+  bottom: 0;
+  z-index: 30;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  border-top: 1px solid var(--border-strong);
+  background: rgba(251, 248, 240, 0.95);
+  backdrop-filter: blur(8px);
+  padding: 8px 12px;
+}
+
+@media (min-width: 768px) {
+  .sticky-mobile-filters {
+    display: none;
+  }
 }
 
 .model-note {

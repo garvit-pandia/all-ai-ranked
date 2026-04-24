@@ -266,6 +266,50 @@ export default function Dashboard({ initialModels, initialChatbots }: DashboardP
 
           <SuggestSection onApplyHighlights={applyHighlights} />
         </div>
+
+        {/* Sticky mobile active filters bar */}
+        <div className="sticky-mobile-filters">
+          <span className="font-mono text-[10px] uppercase tracking-[0.1em] text-muted">Filters</span>
+          {chatbotFilter !== "all" && (
+            <MobileFilterChip
+              label={chatbotFilter}
+              onClick={() => {
+                setChatbotFilter("all");
+                triggerChatbotRefresh();
+              }}
+            />
+          )}
+          {modelTask !== "all" && (
+            <MobileFilterChip
+              label={modelTask}
+              onClick={() => {
+                setModelTask("all");
+                triggerModelRefresh();
+              }}
+            />
+          )}
+          {modelSource !== "all" && (
+            <MobileFilterChip
+              label={modelSource}
+              onClick={() => {
+                setModelSource("all");
+                triggerModelRefresh();
+              }}
+            />
+          )}
+          {modelSort !== "speed" && (
+            <MobileFilterChip
+              label={modelSort}
+              onClick={() => {
+                setModelSort("speed");
+                triggerModelRefresh();
+              }}
+            />
+          )}
+          {chatbotFilter === "all" && modelTask === "all" && modelSource === "all" && modelSort === "speed" && (
+            <span className="text-xs text-muted">None</span>
+          )}
+        </div>
       </main>
     </div>
   );
@@ -352,6 +396,24 @@ function ActiveToken({
       type="button"
       className="filter-token"
       onClick={onClick}
+    >
+      {label} x
+    </button>
+  );
+}
+
+function MobileFilterChip({
+  label,
+  onClick,
+}: {
+  label: string;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="filter-pill filter-pill-active"
     >
       {label} x
     </button>

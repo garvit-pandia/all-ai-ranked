@@ -49,13 +49,17 @@ function ModelsSectionImpl({
 
       {models.length === 0 ? (
         <div className="empty-panel">
+          <svg className="empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+          </svg>
           <p className="font-serif text-3xl tracking-tight text-foreground">No model matches this filter.</p>
           <p className="mt-2 text-sm text-muted">
             Clear active chips or switch source/task to <span className="font-semibold text-foreground">All</span>.
           </p>
         </div>
       ) : (
-        <div className="model-table">
+        <div className="table-wrap">
+          <div className="model-table">
           <div className="model-head" aria-hidden>
             <span>Model</span>
             <span>Provider</span>
@@ -75,7 +79,7 @@ function ModelsSectionImpl({
                 style={{ animationDelay: `${index * 24}ms` }}
               >
                 <div className="model-primary">
-                  <h3 className="model-name">{model.name}</h3>
+                  <h3 className="model-name" title={model.name}>{model.name}</h3>
                   <div className="mt-2 flex flex-wrap gap-2">
                     {model.isNew2026 && <span className="chip chip-signal">New 2026</span>}
                     {model.status !== "active" && <span className="chip">{model.status}</span>}
@@ -104,6 +108,7 @@ function ModelsSectionImpl({
               </article>
             );
           })}
+          </div>
         </div>
       )}
     </section>

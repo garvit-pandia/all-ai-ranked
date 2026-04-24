@@ -46,13 +46,17 @@ function ChatbotsSectionImpl({
 
       {chatbots.length === 0 ? (
         <div className="empty-panel">
+          <svg className="empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+          </svg>
           <p className="font-serif text-3xl tracking-tight text-foreground">No chatbot matches this filter.</p>
           <p className="mt-2 text-sm text-muted">
             Try switching the use-case back to <span className="font-semibold text-foreground">All</span>.
           </p>
         </div>
       ) : (
-        <div className="rank-table">
+        <div className="table-wrap">
+          <div className="rank-table">
           {leader && (
             <article
               key={leader.id}
@@ -61,7 +65,7 @@ function ChatbotsSectionImpl({
               <div className="rank-lead-no">#{leader.rank}</div>
               <div>
                 <p className="section-label">Top pick</p>
-                <h3 className="rank-lead-title">{leader.name}</h3>
+                <h3 className="rank-lead-title" title={leader.name}>{leader.name}</h3>
                 <p className="rank-lead-subline">
                   {leader.provider} · {leader.bestFor} · {leader.freeModel}
                 </p>
@@ -98,7 +102,7 @@ function ChatbotsSectionImpl({
                 <div className="rank-cell rank-cell-no">{String(chatbot.rank).padStart(2, "0")}</div>
 
                 <div className="rank-cell">
-                  <h3 className="rank-name">{chatbot.name}</h3>
+                  <h3 className="rank-name" title={chatbot.name}>{chatbot.name}</h3>
                   <p className="rank-meta">
                     {chatbot.provider} · {chatbot.bestFor}
                   </p>
@@ -126,6 +130,7 @@ function ChatbotsSectionImpl({
               </article>
             );
           })}
+          </div>
         </div>
       )}
     </section>
